@@ -56,6 +56,12 @@ fn main(
     expiry: pub Field,
 ) {
     assert(compute_policy_commitment(max_value, allowed_target, policy_salt) == policy_commitment);
+    // `as u128` truncates to the low 128 bits without constraining the high
+    // bits away, so a Field >= 2^128 (e.g. `2^128 + x`) would silently compare
+    // as `x`. Constrain both operands into u128 range first so the cast is
+    // lossless and the comparison below is a true unsigned range check.
+    value.assert_max_bit_size::<128>();
+    max_value.assert_max_bit_size::<128>();
     assert((value as u128) <= (max_value as u128));
     assert(target == allowed_target);
 
@@ -92,5 +98,50 @@ fn allow_vector_commitment() {
     assert(
         compute_policy_commitment(max_value, allowed_target, policy_salt)
             == 0x10ab3b74faac7b7dbead3e6901e341220f41a0130935d19b3604b680eadd3026,
+    );
+}
+
+#[test]
+fn accepts_value_at_u128_max_boundary() {
+    // u128::MAX. The largest value the range check may still accept.
+    let max_value: Field = 340282366920938463463374607431768211455;
+    let allowed_target: Field = 0x70997970c51812dc3a010c7d01b50e0d17dc79c8;
+    let policy_salt: Field = 42;
+    let policy_commitment = compute_policy_commitment(max_value, allowed_target, policy_salt);
+    main(
+        max_value, allowed_target, policy_salt, policy_commitment, 31337, 0x1, allowed_target,
+        max_value, 0, 0, 2000000000,
+    );
+}
+
+#[test(should_fail)]
+fn rejects_value_at_two_pow_128() {
+    // u128::MAX, i.e. 2^128 - 1.
+    let max_value: Field = 340282366920938463463374607431768211455;
+    let allowed_target: Field = 0x70997970c51812dc3a010c7d01b50e0d17dc79c8;
+    let policy_salt: Field = 42;
+    let policy_commitment = compute_policy_commitment(max_value, allowed_target, policy_salt);
+    // 2^128. Under the old `(value as u128) <= (max_value as u128)` cast this
+    // truncated to 0 and wrongly satisfied `value <= max_value`.
+    let value: Field = 340282366920938463463374607431768211456;
+    main(
+        max_value, allowed_target, policy_salt, policy_commitment, 31337, 0x1, allowed_target,
+        value, 0, 0, 2000000000,
+    );
+}
+
+#[test(should_fail)]
+fn rejects_max_value_at_two_pow_128() {
+    // 2^128. A malicious policy commitment could not use this as max_value
+    // without the explicit range constraint, since the truncating cast would
+    // silently accept any value up to 2^128 - 1 on top of the real bound.
+    let max_value: Field = 340282366920938463463374607431768211456;
+    let allowed_target: Field = 0x70997970c51812dc3a010c7d01b50e0d17dc79c8;
+    let policy_salt: Field = 42;
+    let policy_commitment = compute_policy_commitment(max_value, allowed_target, policy_salt);
+    let value: Field = 1;
+    main(
+        max_value, allowed_target, policy_salt, policy_commitment, 31337, 0x1, allowed_target,
+        value, 0, 0, 2000000000,
     );
 }
