@@ -29,12 +29,13 @@ ETH を保有する Safe が、有効化済み `ZkPolicySafeModule` を経由し
 
 ## 手順
 
-1. Safe release、依存元、module API、公式テスト fixture を ADR で固定する。
-2. `safe` と対応 operation を policy spec と test vector に定義する。意味が同じなら既存の 8 public input の順序を保つ。
-3. configuration、revoke、context check、verifier 呼び出し、Safe ごとの nonce、event、fail-closed な module 実行を実装する。
-4. enabled module 成功、無効 module 拒否、設定変更、target/value/calldata 改ざん、別 Safe／chain、replay、expiry、不正 input、不正 proof、Safe 実行失敗をテストする。
-5. deploy／execute script と Anvil demo を Safe 経路へ置き換える。
-6. Safe 経路がテスト・demo ともに同等になってから `PolicyAccount` を別 PR で削除する。
+1. **Blocker: `uint256` range constraint を修正し、verifier を再生成する。** 現行 circuit の `Field as u128` 比較は上位 bit を切り詰めるため、`2^128 + x` を `x` として扱える（[Noir の Field cast に関する公式説明](https://noir-lang.org/docs/guides/thinking_in_circuits)）。`maxValue` と `value` を uint256 limb として canonical に表現し、recomposition constraint と unsigned comparison を回路に置く。Poseidon2 commitment、Policy SDK encoding、test vector、proof fixture、generated verifier を同じ変更で更新する。`2^128 + x`、最大 uint256、境界値、上限超過を含む否定テストと、固定 toolchain による `bb` の on-chain verification が通るまで後続工程を開始しない。
+2. Safe release、依存元、module API、公式テスト fixture を ADR で固定する。
+3. `safe` と対応 operation を policy spec と test vector に定義する。意味が同じなら既存の 8 public input の順序を保つ。
+4. configuration、revoke、context check、verifier 呼び出し、Safe ごとの nonce、event、fail-closed な module 実行を実装する。
+5. enabled module 成功、無効 module 拒否、設定変更、target/value/calldata 改ざん、別 Safe／chain、replay、expiry、不正 input、不正 proof、Safe 実行失敗をテストする。
+6. deploy／execute script と Anvil demo を Safe 経路へ置き換える。
+7. Safe 経路がテスト・demo ともに同等になってから `PolicyAccount` を別 PR で削除する。
 
 ## 受入条件
 

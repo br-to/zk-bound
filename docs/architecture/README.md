@@ -53,13 +53,11 @@ Safe release prematurely.
 
 ## Open architecture decisions
 
-- target Safe contract version and module interface;
-- first supported action and policy shape;
-- policy commitment construction;
-- per-Safe nonce and replay-protection lifecycle;
-- policy update and emergency revocation path;
-- boundary between on-chain and off-chain validation; and
-- development, test, and demo environments.
+次の3点以外は、現在の policy spec と Plan 0001 を実装上の決定として扱う。初版は native ETH transfer、empty calldata、単一 target、Poseidon2 commitment、UltraHonk verifier、既存の proof binding を使う。
+
+- target Safe contract version と module interface;
+- Safe owner が行う policy update / emergency revoke の具体的な方式; および
+- Safe ごとの nonce storage / replay-protection lifecycle。
 
 Each selection must state its threat-model assumptions and be captured in
 [`docs/decisions`](../decisions/README.md).
