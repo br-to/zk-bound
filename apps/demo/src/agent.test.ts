@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { evaluatePolicy } from "@zk-agent-guard/policy-sdk";
+import { evaluatePolicy } from "@zk-bound/policy-sdk";
 import { AGENT_SYSTEM_PROMPT, mockComplete, parseProposal, propose } from "./agent.js";
 import { ALLOWED_TARGET, ATTACKER } from "./constants.js";
 import { loadPolicy, loadVectors } from "./policy-fixture.js";

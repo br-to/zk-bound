@@ -1,5 +1,5 @@
-import { commitPolicyHex, encodeAddressHex, encodeUint, evaluatePolicy } from "@zk-agent-guard/policy-sdk";
-import type { TransactionProposal } from "@zk-agent-guard/policy-sdk";
+import { commitPolicyHex, encodeAddressHex, encodeUint, evaluatePolicy } from "@zk-bound/policy-sdk";
+import type { TransactionProposal } from "@zk-bound/policy-sdk";
 import { loadPolicy, loadVectors } from "./policy-fixture.js";
 
 const fixtures = loadVectors();

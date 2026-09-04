@@ -29,7 +29,7 @@ importers:
 
   apps/demo:
     dependencies:
-      '@zk-agent-guard/policy-sdk':
+      '@zk-bound/policy-sdk':
         specifier: workspace:*
         version: link:../../packages/policy-sdk
 

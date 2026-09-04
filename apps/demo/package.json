@@ -1,5 +1,5 @@
 {
-  "name": "@zk-agent-guard/demo",
+  "name": "@zk-bound/demo",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -9,6 +9,6 @@
     "test": "pnpm run build && node --test dist/agent.test.js"
   },
   "dependencies": {
-    "@zk-agent-guard/policy-sdk": "workspace:*"
+    "@zk-bound/policy-sdk": "workspace:*"
   }
 }

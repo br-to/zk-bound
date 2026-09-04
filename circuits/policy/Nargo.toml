@@ -1,6 +1,6 @@
 [package]
 name = "policy"
 type = "bin"
-authors = ["zk-agent-guard contributors"]
+authors = ["zk-bound contributors"]
 
 [dependencies]

@@ -28,6 +28,6 @@ jobs:
       - name: Lint and type-check TypeScript
         run: pnpm check
       - name: Test policy SDK
-        run: pnpm --filter @zk-agent-guard/policy-sdk test
+        run: pnpm --filter @zk-bound/policy-sdk test
       - name: Test demo
-        run: pnpm --filter @zk-agent-guard/demo test
+        run: pnpm --filter @zk-bound/demo test

@@ -1,5 +1,5 @@
 {
-  "name": "@zk-agent-guard/policy-sdk",
+  "name": "@zk-bound/policy-sdk",
   "version": "0.1.0",
   "private": true,
   "type": "module",

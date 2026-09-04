@@ -7,8 +7,8 @@ import {
   fieldToHex,
   hashCalldataField,
   publicInputFields,
-} from "@zk-agent-guard/policy-sdk";
-import type { PrivatePolicy, TransactionProposal } from "@zk-agent-guard/policy-sdk";
+} from "@zk-bound/policy-sdk";
+import type { PrivatePolicy, TransactionProposal } from "@zk-bound/policy-sdk";
 import { ALLOWED_TARGET, ALLOW_VALUE_WEI, ATTACKER, CHAIN_ID, EXPIRY, STEAL_VALUE_WEI } from "./constants.js";
 import { loadPolicy, loadVectors } from "./policy-fixture.js";
 

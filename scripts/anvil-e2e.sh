@@ -57,8 +57,8 @@ fi
 echo "toolchain: nargo ${NOIR_VERSION} / bb ${BB_VERSION}"
 
 cd "$ROOT"
-pnpm --filter @zk-agent-guard/policy-sdk build
-pnpm --filter @zk-agent-guard/demo build
+pnpm --filter @zk-bound/policy-sdk build
+pnpm --filter @zk-bound/demo build
 
 cat <<'EOF'
 
@@ -73,10 +73,10 @@ if ! curl -sf -X POST -H 'content-type: application/json' \
   --data '{"jsonrpc":"2.0","id":1,"method":"eth_chainId","params":[]}' \
   "$RPC" >/dev/null; then
   log "Anvil を起動する (code size limit なし)"
-  mkdir -p /tmp/zk-agent-guard
+  mkdir -p /tmp/zk-bound
   nohup anvil --host 127.0.0.1 --port 8545 --disable-code-size-limit --gas-limit 60000000 \
-    > /tmp/zk-agent-guard/anvil.log 2>&1 &
-  echo $! > /tmp/zk-agent-guard/anvil.pid
+    > /tmp/zk-bound/anvil.log 2>&1 &
+  echo $! > /tmp/zk-bound/anvil.pid
   for _ in $(seq 1 40); do
     if curl -sf -X POST -H 'content-type: application/json' \
       --data '{"jsonrpc":"2.0","id":1,"method":"eth_chainId","params":[]}' \

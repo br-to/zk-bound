@@ -1,8 +1,8 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { encodeAddressHex, encodeUint } from "@zk-agent-guard/policy-sdk";
-import type { PrivatePolicy } from "@zk-agent-guard/policy-sdk";
+import { encodeAddressHex, encodeUint } from "@zk-bound/policy-sdk";
+import type { PrivatePolicy } from "@zk-bound/policy-sdk";
 
 export type VectorFile = {
   policy: {

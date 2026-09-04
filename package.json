@@ -1,5 +1,5 @@
 {
-  "name": "zk-agent-guard",
+  "name": "zk-bound",
   "version": "0.1.0",
   "private": true,
   "description": "Private ZK policy enforcement layer for AI agent wallets",
@@ -8,13 +8,13 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "pnpm --filter @zk-agent-guard/policy-sdk build && pnpm --filter @zk-agent-guard/demo build",
+    "build": "pnpm --filter @zk-bound/policy-sdk build && pnpm --filter @zk-bound/demo build",
     "check": "pnpm lint && pnpm typecheck",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "pnpm --filter @zk-agent-guard/policy-sdk test && pnpm --filter @zk-agent-guard/demo test && pnpm test:contracts",
+    "test": "pnpm --filter @zk-bound/policy-sdk test && pnpm --filter @zk-bound/demo test && pnpm test:contracts",
     "test:contracts": "forge test --root contracts",
-    "demo": "pnpm --filter @zk-agent-guard/demo start",
+    "demo": "pnpm --filter @zk-bound/demo start",
     "demo:anvil": "bash scripts/anvil-e2e.sh",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
