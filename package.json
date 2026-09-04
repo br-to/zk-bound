@@ -1,0 +1,30 @@
+{
+  "name": "zk-bound",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Private ZK policy enforcement layer for AI agent wallets",
+  "packageManager": "pnpm@10.31.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "pnpm --filter @zk-bound/policy-sdk build && pnpm --filter @zk-bound/demo build",
+    "check": "pnpm lint && pnpm typecheck",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "pnpm --filter @zk-bound/policy-sdk test && pnpm --filter @zk-bound/demo test && pnpm test:contracts",
+    "test:contracts": "forge test --root contracts",
+    "demo": "pnpm --filter @zk-bound/demo start",
+    "demo:anvil": "bash scripts/anvil-e2e.sh",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/node": "^26.4.0",
+    "eslint": "^9.39.1",
+    "prettier": "^3.7.4",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.0"
+  }
+}
