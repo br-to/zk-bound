@@ -3,6 +3,12 @@
 This document describes the expected Safe Module boundaries without selecting a
 Safe release prematurely.
 
+詳細:
+
+- [policy specification](policy-spec.md) — proof が bind する transaction と policy
+- [proof system](proof-system.md) — Noir / UltraHonk / generated verifier の固定事項
+- [Safe Module design](safe-module.md) — migration 後の execution boundary
+
 ## Conceptual flow
 
 1. Safe owners define a permission policy outside the agent's control.
