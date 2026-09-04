@@ -1,0 +1,14 @@
+{
+  "name": "@zk-agent-guard/demo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --outDir dist --noEmit false",
+    "start": "pnpm run build && node dist/index.js",
+    "test": "pnpm run build && node --test dist/agent.test.js"
+  },
+  "dependencies": {
+    "@zk-agent-guard/policy-sdk": "workspace:*"
+  }
+}

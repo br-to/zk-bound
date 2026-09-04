@@ -1,0 +1,128 @@
+{
+  "version": 1,
+  "notes": "Shared golden vectors for TypeScript, Noir, and Solidity. Do not regenerate casually; change only with a version bump and dual review.",
+  "encoding": {
+    "address": "20-byte 0x-hex interpreted as a big-endian integer Field (value < 2^160 < Fr)",
+    "uint": "unsigned integer as Field; must be < BN254_Fr",
+    "calldataHash": "keccak256(calldata) as bytes32; Field form is uint256(bytes32) mod BN254_Fr",
+    "commitmentInputs": ["POLICY_DOMAIN", "maxValue", "allowedTarget", "policySalt"],
+    "hash": "Poseidon2 hashFixedLength (Aztec / @zkpassport/poseidon2). iv = input_len << 64, rate=3, t=4. Do not use Noir 1.0.0-beta.22 Poseidon2Hasher for 4 inputs (tail drop bug).",
+    "publicInputOrder": [
+      "policyCommitment",
+      "chainId",
+      "account",
+      "target",
+      "value",
+      "calldataHash",
+      "nonce",
+      "expiry"
+    ]
+  },
+  "constants": {
+    "domainTag": "zk-agent-guard.policy.v1",
+    "domain": "0x07f63415ec1973fe9426f5373c7b20728b4867a4169844a224ba3e03c72ac95a",
+    "fieldModulus": "0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001",
+    "emptyCalldataHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470",
+    "emptyCalldataHashField": "0x04410c360230a295b13d66d8d6c1a24c44311531e39c64f66c7301b49d85a46c",
+    "poseidon2_1_2_3": "0x23864adb160dddf590f1d3303683ebcb914f828e2635f6e85a32f0a1aecd3dd8",
+    "poseidon2_1_2_3_4_5": "0x2247be7014a54d17342a7ef677f58d28877780d203860396967f5d0a18d259db"
+  },
+  "policy": {
+    "maxValue": "1000000000000000000",
+    "allowedTarget": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+    "policySalt": "42",
+    "policyCommitment": "0x10ab3b74faac7b7dbead3e6901e341220f41a0130935d19b3604b680eadd3026"
+  },
+  "vectors": [
+    {
+      "id": "allow-native-transfer",
+      "expect": "allow",
+      "transaction": {
+        "chainId": "31337",
+        "account": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+        "target": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+        "value": "500000000000000000",
+        "calldata": "0x",
+        "nonce": "0",
+        "expiry": "2000000000"
+      },
+      "expected": {
+        "satisfiesPolicy": true,
+        "calldataHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470",
+        "publicInputs": [
+          "0x10ab3b74faac7b7dbead3e6901e341220f41a0130935d19b3604b680eadd3026",
+          "0x0000000000000000000000000000000000000000000000000000000000007a69",
+          "0x000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+          "0x00000000000000000000000070997970c51812dc3a010c7d01b50e0d17dc79c8",
+          "0x00000000000000000000000000000000000000000000000006f05b59d3b20000",
+          "0x04410c360230a295b13d66d8d6c1a24c44311531e39c64f66c7301b49d85a46c",
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "0x0000000000000000000000000000000000000000000000000000000077359400"
+        ]
+      }
+    },
+    {
+      "id": "boundary-max-value",
+      "expect": "allow",
+      "transaction": {
+        "chainId": "31337",
+        "account": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+        "target": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+        "value": "1000000000000000000",
+        "calldata": "0x",
+        "nonce": "0",
+        "expiry": "2000000000"
+      },
+      "expected": {
+        "satisfiesPolicy": true,
+        "calldataHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470",
+        "publicInputs": [
+          "0x10ab3b74faac7b7dbead3e6901e341220f41a0130935d19b3604b680eadd3026",
+          "0x0000000000000000000000000000000000000000000000000000000000007a69",
+          "0x000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+          "0x00000000000000000000000070997970c51812dc3a010c7d01b50e0d17dc79c8",
+          "0x0000000000000000000000000000000000000000000000000de0b6b3a7640000",
+          "0x04410c360230a295b13d66d8d6c1a24c44311531e39c64f66c7301b49d85a46c",
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "0x0000000000000000000000000000000000000000000000000000000077359400"
+        ]
+      }
+    },
+    {
+      "id": "reject-over-max",
+      "expect": "reject",
+      "reason": "value_exceeds_max",
+      "transaction": {
+        "chainId": "31337",
+        "account": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+        "target": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+        "value": "1000000000000000001",
+        "calldata": "0x",
+        "nonce": "0",
+        "expiry": "2000000000"
+      },
+      "expected": {
+        "satisfiesPolicy": false,
+        "calldataHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+      }
+    },
+    {
+      "id": "reject-wrong-target",
+      "expect": "reject",
+      "reason": "target_not_allowed",
+      "transaction": {
+        "chainId": "31337",
+        "account": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+        "target": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "500000000000000000",
+        "calldata": "0x",
+        "nonce": "0",
+        "expiry": "2000000000"
+      },
+      "expected": {
+        "satisfiesPolicy": false,
+        "calldataHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+      }
+    }
+  ]
+}

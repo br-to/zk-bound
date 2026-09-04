@@ -1,0 +1,14 @@
+node_modules/
+.pnpm-store/
+dist/
+coverage/
+cache/
+out/
+broadcast/
+artifacts/
+*.tsbuildinfo
+.env
+.DS_Store
+circuits/**/target/
+circuits/**/proofs/
+contracts/tmp/
