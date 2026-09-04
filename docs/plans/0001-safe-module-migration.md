@@ -29,7 +29,7 @@ ETH を保有する Safe が、有効化済み `ZkPolicySafeModule` を経由し
 
 ## 手順
 
-1. **Blocker: `uint256` range constraint を修正し、verifier を再生成する。** 現行 circuit の `Field as u128` 比較は上位 bit を切り詰めるため、`2^128 + x` を `x` として扱える（[Noir の Field cast に関する公式説明](https://noir-lang.org/docs/guides/thinking_in_circuits)）。`maxValue` と `value` を uint256 limb として canonical に表現し、recomposition constraint と unsigned comparison を回路に置く。Poseidon2 commitment、Policy SDK encoding、test vector、proof fixture、generated verifier を同じ変更で更新する。`2^128 + x`、最大 uint256、境界値、上限超過を含む否定テストと、固定 toolchain による `bb` の on-chain verification が通るまで後続工程を開始しない。
+1. **Blocker: range constraint を修正し、verifier を再生成する。** 現行 circuit の `Field as u128` 比較は上位 bit を切り詰めるため、`2^128 + x` を `x` として扱えた（[Noir の Field cast に関する公式説明](https://noir-lang.org/docs/guides/thinking_in_circuits)）。[ADR 0003](../decisions/0003-constrain-policy-values-to-u128-range.md) により、`maxValue` と `value` に `assert_max_bit_size::<128>()` を追加して `u128` 範囲を明示的に制約する方針を採用した（native ETH transfer が扱う wei 額に対して `2^128` は制限にならないため、uint256 全域の limb decomposition は現時点で見送る）。circuit source と `2^128` 境界・`u128::MAX` 境界の否定・肯定テストは追加済み。**残作業**: Poseidon2 commitment、Policy SDK encoding、test vector、proof fixture、generated verifier は旧 circuit のまま同期していない。固定 toolchain (`nargo`/`bb`) でこれらを再生成し、固定 toolchain による `bb` の on-chain verification が通るまで後続工程を開始しない。
 2. Safe release、依存元、module API、公式テスト fixture を ADR で固定する。
 3. `safe` と対応 operation を policy spec と test vector に定義する。意味が同じなら既存の 8 public input の順序を保つ。
 4. configuration、revoke、context check、verifier 呼び出し、Safe ごとの nonce、event、fail-closed な module 実行を実装する。
