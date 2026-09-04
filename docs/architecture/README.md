@@ -53,11 +53,22 @@ Safe release prematurely.
 
 ## Open architecture decisions
 
-次の3点以外は、現在の policy spec と Plan 0001 を実装上の決定として扱う。初版は native ETH transfer、empty calldata、単一 target、Poseidon2 commitment、UltraHonk verifier、既存の proof binding を使う。
+現在の policy spec と Plan 0001 は次を実装上の決定として扱う。
 
-- target Safe contract version と module interface;
-- Safe owner が行う policy update / emergency revoke の具体的な方式; および
-- Safe ごとの nonce storage / replay-protection lifecycle。
+- native ETH transfer のみを扱う。
+- calldata は空（empty calldata）に限定する。
+- Safe operation は `Call` のみを使う。
+- private witness は `maxValue` + 単一の `allowedTarget` + `policySalt` に限定する。
+- policy commitment は Poseidon2 で計算する。
+- proving system は UltraHonk（既存の proof binding、8 public input の順序）を使う。
+- 最初の demo 環境は Anvil とする。
+
+follow-up ADR で固定するまでの未決定事項は次の4点だけである。
+
+- target Safe contract version。
+- `ZkPolicySafeModule` が呼ぶ正確な Module API（interface、関数シグネチャ）。
+- Safe owner が行う policy の設定・更新・revoke lifecycle の具体的な方式。
+- policy 変更時に nonce をどう扱うか（据え置く、リセットする等）。
 
 Each selection must state its threat-model assumptions and be captured in
 [`docs/decisions`](../decisions/README.md).
