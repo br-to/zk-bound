@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Anvil 上で「エージェント提案 → proof → execute → 着金 / 拒否」を通す。
+# Anvil 上で Safe + ZkPolicySafeModule の「エージェント提案 → proof → execute → 着金 / 拒否」を通す。
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -65,7 +65,7 @@ cat <<'EOF'
   AI にはポリシーを見せない
   AI は送金案だけ出す
   手元の prover だけが秘密ポリシーを知る
-  チェーンは proof が通ったときだけ ETH を出す
+  Safe は proof が通ったときだけ module 経由で ETH を出す
 
 EOF
 
@@ -93,30 +93,42 @@ if [ "$CHAIN_ID_HEX" != "31337" ]; then
   exit 1
 fi
 
-log "HonkVerifier と PolicyAccount をデプロイして 10 ETH を入れる"
+log "HonkVerifier + ZkPolicySafeModule + Safe をデプロイして 10 ETH を入れる"
 cd "$CONTRACTS"
 DEPLOY_LOG="$(mktemp)"
-forge script script/Deploy.s.sol:Deploy \
+forge script script/DeploySafe.s.sol:DeploySafe \
   --rpc-url "$RPC" \
   --broadcast \
   --private-key "$PK" \
   --gas-limit 60000000 \
-  -vv | tee "$DEPLOY_LOG"
+  -vv
 
-ACCOUNT="$(python3 - <<PY
+MODULE="$(python3 -c "
 import json
 from pathlib import Path
-p = Path("$CONTRACTS/broadcast/Deploy.s.sol/31337/run-latest.json")
+p = Path(r'$CONTRACTS/broadcast/DeploySafe.s.sol/31337/run-latest.json')
 data = json.loads(p.read_text())
-for tx in data.get("transactions", []):
-    if tx.get("contractName") == "PolicyAccount":
-        print(tx["contractAddress"])
+for tx in data.get('transactions', []):
+    if tx.get('contractName') == 'ZkPolicySafeModule':
+        print(tx['contractAddress'])
         break
 else:
-    raise SystemExit("PolicyAccount address missing from broadcast")
-PY
-)"
-echo "PolicyAccount $ACCOUNT"
+    raise SystemExit('ZkPolicySafeModule address missing from broadcast')
+")"
+ACCOUNT="$(python3 -c "
+import json
+from pathlib import Path
+p = Path(r'$CONTRACTS/broadcast/DeploySafe.s.sol/31337/run-latest.json')
+data = json.loads(p.read_text())
+for tx in data.get('transactions', []):
+    if tx.get('contractName') == 'SafeProxy':
+        print(tx['contractAddress'])
+        break
+else:
+    raise SystemExit('SafeProxy address missing from broadcast')
+")"
+echo "ZkPolicySafeModule $MODULE"
+echo "Safe $ACCOUNT"
 
 before_target="$(cast balance "$TARGET" --rpc-url "$RPC")"
 before_account="$(cast balance "$ACCOUNT" --rpc-url "$RPC")"
@@ -166,11 +178,11 @@ bb prove -b ./target/policy.json -w ./target/policy.gz -o ./target -k ./target/v
 mkdir -p "$CONTRACTS/tmp"
 cp ./target/proof "$PROOF_COPY"
 
-log "chain: PolicyAccount.execute"
+log "chain: ZkPolicySafeModule.executeWithPolicy"
 cd "$CONTRACTS"
-forge script script/Execute.s.sol:Execute \
-  --sig "run(address,address,uint256,uint64,string)" \
-  "$ACCOUNT" "$ALLOW_TARGET" "$ALLOW_VALUE" "$EXPIRY" "tmp/e2e.proof.bin" \
+forge script script/ExecuteSafe.s.sol:ExecuteSafe \
+  --sig "run(address,address,address,uint256,uint64,string)" \
+  "$MODULE" "$ACCOUNT" "$ALLOW_TARGET" "$ALLOW_VALUE" "$EXPIRY" "tmp/e2e.proof.bin" \
   --rpc-url "$RPC" \
   --broadcast \
   --private-key "$PK" \
@@ -186,7 +198,7 @@ before = int("$before_target")
 after = int("$after_target")
 if after - before != int("$ALLOW_VALUE"):
     raise SystemExit(f"expected +{int('$ALLOW_VALUE')} wei, got {after - before}")
-print("ok  allow: ETH arrived")
+print("ok  allow: ETH arrived via Safe module")
 PY
 
 log "ユーザー: 全額を攻撃者へ送れ (prompt injection)"
@@ -227,9 +239,9 @@ log "chain: 正しい proof のまま宛先だけすり替える"
 cd "$CONTRACTS"
 set +e
 WRONG_LOG="$(mktemp)"
-forge script script/Execute.s.sol:ExecuteWrongTarget \
-  --sig "run(address,address,address,uint256,uint64,string)" \
-  "$ACCOUNT" "$TARGET" "$THIEF" "$VALUE" "$EXPIRY" "tmp/e2e.proof.bin" \
+forge script script/ExecuteSafe.s.sol:ExecuteSafeWrongTarget \
+  --sig "run(address,address,address,address,uint256,uint64,string)" \
+  "$MODULE" "$ACCOUNT" "$TARGET" "$THIEF" "$VALUE" "$EXPIRY" "tmp/e2e.proof.bin" \
   --rpc-url "$RPC" \
   --broadcast \
   --private-key "$PK" \
@@ -282,9 +294,9 @@ cast rpc anvil_mine --rpc-url "$RPC" >/dev/null
 cd "$CONTRACTS"
 set +e
 EXPIRED_LOG="$(mktemp)"
-forge script script/Execute.s.sol:Execute \
-  --sig "run(address,address,uint256,uint64,string)" \
-  "$ACCOUNT" "$ALLOW_TARGET" "$ALLOW_VALUE" "$EXPIRY" "tmp/e2e.proof.bin" \
+forge script script/ExecuteSafe.s.sol:ExecuteSafe \
+  --sig "run(address,address,address,uint256,uint64,string)" \
+  "$MODULE" "$ACCOUNT" "$ALLOW_TARGET" "$ALLOW_VALUE" "$EXPIRY" "tmp/e2e.proof.bin" \
   --rpc-url "$RPC" \
   --broadcast \
   --private-key "$PK" \
@@ -310,8 +322,9 @@ if int("$after_target3") != int("$after_target"):
 print("ok  reject: expired proof did not move funds")
 PY
 
-log "Anvil e2e 完了"
-echo "PolicyAccount $ACCOUNT"
+log "Anvil e2e 完了 (Safe path)"
+echo "Safe $ACCOUNT"
+echo "ZkPolicySafeModule $MODULE"
 echo "allow ETH moved to $TARGET"
 echo "injection / swapped target / expired did not move extra funds"
 echo "agent mode: $AGENT_MODE"

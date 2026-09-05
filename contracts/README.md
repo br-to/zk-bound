@@ -8,6 +8,8 @@
 - `src/PolicyAccount.sol` は `zk-agent-guard` から取り込んだ独自 smart account の reference 実装。
 - `src/ZkPolicySafeModule.sol` は Safe v1.4.1 module。policy 設定（`configurePolicy` / `replacePolicy` / `revokePolicy`）は Safe 自身からのみ。proof 付き実行は `executeWithPolicy`。
 - `test/fixtures/allow.proof.bin` は reference 実装を検証する allow proof fixture。
+- `script/DeploySafe.s.sol` / `script/ExecuteSafe.s.sol` は Anvil demo 用の Safe + module 経路。
+- `script/Deploy.s.sol` / `script/Execute.s.sol` は PolicyAccount reference 経路（Step 7 まで保持）。
 
 `PolicyAccount` は production の実行経路ではない。Safe Module への移行方針は [ADR 0002](../docs/decisions/0002-adopt-safe-module-execution-boundary.md)、具体的な工程は [Plan 0001](../docs/plans/0001-safe-module-migration.md) を参照する。
 
