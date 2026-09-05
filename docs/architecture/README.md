@@ -1,7 +1,7 @@
 # Architecture notes
 
-This document describes the expected Safe Module boundaries without selecting a
-Safe release prematurely.
+This document describes the expected Safe Module boundaries. Safe release and
+ModuleManager API are pinned in [ADR 0004](../decisions/0004-pin-safe-v1.4.1.md).
 
 詳細:
 
@@ -63,11 +63,14 @@ Safe release prematurely.
 - proving system は UltraHonk（既存の proof binding、8 public input の順序）を使う。
 - 最初の demo 環境は Anvil とする。
 
-follow-up ADR で固定するまでの未決定事項は次の4点だけである。
+[ADR 0004](../decisions/0004-pin-safe-v1.4.1.md) で決定済み:
 
-- target Safe contract version。
-- `ZkPolicySafeModule` が呼ぶ正確な Module API（interface、関数シグネチャ）。
-- Safe owner が行う policy の設定・更新・revoke lifecycle の具体的な方式。
+- target Safe contract version: `v1.4.1`（commit `bf943f80fec5ac647159d26161446ac5d716a294`）。
+- `ZkPolicySafeModule` が呼ぶ ModuleManager API（`enableModule`／`disableModule`／`execTransactionFromModule`／`isModuleEnabled`、初版は `Call` のみ）。
+
+follow-up ADR で固定するまでの未決定事項は次の2点である。
+
+- Safe owner が行う policy の設定・更新・revoke lifecycle の具体的な方式（我々の module 上の関数名など）。
 - policy 変更時に nonce をどう扱うか（据え置く、リセットする等）。
 
 Each selection must state its threat-model assumptions and be captured in
