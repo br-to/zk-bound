@@ -44,7 +44,7 @@ policy の設定と revoke は `msg.sender == safe` を要求し、Safe owner �
 ## execute の順序
 
 1. Safe と policy configuration が有効であることを確認する。
-2. public input 数と commitment、chain ID、Safe、target、value、calldata hash、nonce、expiry を operation と照合する。
+2. public input 数と commitment、chain ID、Safe（`account == safe`）、target、value、calldata hash、nonce、expiry を operation と照合する。[policy-spec](policy-spec.md) の初版では `data` は空、`operation` は `Call` のみ（operation は public input ではない）。
 3. `block.timestamp` と expiry を照合する。
 4. UltraHonk verifier を呼ぶ。
 5. nonce を進め、同一 transaction 内で Safe module API を呼ぶ。

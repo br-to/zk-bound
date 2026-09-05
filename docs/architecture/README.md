@@ -53,11 +53,12 @@ ModuleManager API are pinned in [ADR 0004](../decisions/0004-pin-safe-v1.4.1.md)
 
 ## Open architecture decisions
 
-現在の policy spec と Plan 0001 は次を実装上の決定として扱う。
+[policy-spec](policy-spec.md) と test vector（version 2）で次を正本化した（Plan 0001 Step 3）。
 
 - native ETH transfer のみを扱う。
 - calldata は空（empty calldata）に限定する。
-- Safe operation は `Call` のみを使う。
+- Safe operation は `Call` のみを使う（public input には含めず、execution boundary で固定）。
+- public input の `account` は Safe address（`account == safe`）。8 入力の順序は変更しない。
 - private witness は `maxValue` + 単一の `allowedTarget` + `policySalt` に限定する。
 - policy commitment は Poseidon2 で計算する。
 - proving system は UltraHonk（既存の proof binding、8 public input の順序）を使う。

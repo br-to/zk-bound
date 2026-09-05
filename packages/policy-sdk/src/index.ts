@@ -17,7 +17,7 @@ export {
 export { assertInField, bytes32ToField, fieldToHex, parseDecimalOrHex, toField } from "./field.js";
 export { commitPolicy, commitPolicyHex, poseidon2HashFields } from "./commitment.js";
 export { bindTransaction, evaluatePolicy, publicInputFields, publicInputs } from "./policy.js";
-export { PUBLIC_INPUT_ORDER } from "./types.js";
+export { PUBLIC_INPUT_ORDER, SAFE_OPERATION_CALL } from "./types.js";
 export type {
   Address,
   Hex,

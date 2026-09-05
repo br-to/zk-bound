@@ -48,7 +48,7 @@ fn main(
     policy_salt: Field,
     policy_commitment: pub Field,
     chain_id: pub Field,
-    account: pub Field,
+    account: pub Field, // Safe address (account == safe); name kept for compatibility
     target: pub Field,
     value: pub Field,
     calldata_hash: pub Field,

@@ -7,6 +7,8 @@ import {
   EMPTY_CALLDATA_HASH,
   POLICY_DOMAIN,
   POLICY_DOMAIN_TAG,
+  PUBLIC_INPUT_ORDER,
+  SAFE_OPERATION_CALL,
   commitPolicy,
   encodeAddressHex,
   encodeUint,
@@ -18,7 +20,25 @@ import {
 } from "./index.js";
 import type { PrivatePolicy, TransactionProposal } from "./types.js";
 
+type SafeOperation = {
+  to: string;
+  value: string;
+  data: string;
+  operation: "Call";
+  operationEnum: number;
+};
+
 type VectorFile = {
+  version: number;
+  encoding: {
+    account: string;
+    safeOperation: {
+      operation: "Call";
+      operationEnum: number;
+      data: string;
+    };
+    publicInputOrder: string[];
+  };
   constants: {
     domainTag: string;
     domain: string;
@@ -26,6 +46,7 @@ type VectorFile = {
     emptyCalldataHashField: string;
     poseidon2_1_2_3: string;
     poseidon2_1_2_3_4_5: string;
+    safeOperationCall: number;
   };
   policy: {
     maxValue: string;
@@ -43,9 +64,11 @@ type VectorFile = {
       target: string;
       value: string;
       calldata: string;
+      operation: "Call";
       nonce: string;
       expiry: string;
     };
+    safeOperation: SafeOperation;
     expected: {
       satisfiesPolicy: boolean;
       calldataHash: string;
@@ -90,6 +113,17 @@ test("domain tag and empty calldata hash are locked", () => {
   assert.equal(hashCalldata("0x"), fixtures.constants.emptyCalldataHash);
 });
 
+test("Safe Call binding metadata is locked", () => {
+  assert.equal(fixtures.version, 2);
+  assert.deepEqual(fixtures.encoding.publicInputOrder, [...PUBLIC_INPUT_ORDER]);
+  assert.match(fixtures.encoding.account, /Safe address/);
+  assert.equal(fixtures.encoding.safeOperation.operation, "Call");
+  assert.equal(fixtures.encoding.safeOperation.operationEnum, SAFE_OPERATION_CALL);
+  assert.equal(fixtures.encoding.safeOperation.data, "0x");
+  assert.equal(fixtures.constants.safeOperationCall, SAFE_OPERATION_CALL);
+  assert.equal(SAFE_OPERATION_CALL, 0);
+});
+
 test("policy commitment is locked", () => {
   assert.equal(fieldToHex(commitPolicy(policy)), fixtures.policy.policyCommitment);
 });
@@ -109,10 +143,18 @@ for (const vector of fixtures.vectors) {
     } else {
       assert.equal(check.reason, vector.reason);
     }
+    assert.equal(vector.transaction.operation, "Call");
+    assert.equal(vector.transaction.calldata, "0x");
+    assert.equal(vector.safeOperation.operation, "Call");
+    assert.equal(vector.safeOperation.operationEnum, SAFE_OPERATION_CALL);
+    assert.equal(vector.safeOperation.data, "0x");
+    assert.equal(vector.safeOperation.to, vector.transaction.target);
+    assert.equal(vector.safeOperation.value, vector.transaction.value);
     assert.equal(hashCalldata(vector.transaction.calldata), vector.expected.calldataHash);
     if (vector.expected.publicInputs) {
       const fields = publicInputFields(policy, proposal).map((value) => fieldToHex(value));
       assert.deepEqual(fields, vector.expected.publicInputs);
+      assert.equal(fields.length, PUBLIC_INPUT_ORDER.length);
     }
   });
 }
