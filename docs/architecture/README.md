@@ -1,7 +1,7 @@
 # Architecture notes
 
 This document describes the expected Safe Module boundaries. Safe release and
-ModuleManager API are pinned in [ADR 0004](../decisions/0004-pin-safe-smart-account-v1.4.1.md).
+ModuleManager API are pinned in [ADR 0004](../decisions/0004-pin-safe-v1.4.1.md).
 
 詳細:
 
@@ -63,7 +63,7 @@ ModuleManager API are pinned in [ADR 0004](../decisions/0004-pin-safe-smart-acco
 - proving system は UltraHonk（既存の proof binding、8 public input の順序）を使う。
 - 最初の demo 環境は Anvil とする。
 
-[ADR 0004](../decisions/0004-pin-safe-smart-account-v1.4.1.md) で決定済み:
+[ADR 0004](../decisions/0004-pin-safe-v1.4.1.md) で決定済み:
 
 - target Safe contract version: `v1.4.1`（commit `bf943f80fec5ac647159d26161446ac5d716a294`）。
 - `ZkPolicySafeModule` が呼ぶ ModuleManager API（`enableModule`／`disableModule`／`execTransactionFromModule`／`isModuleEnabled`、初版は `Call` のみ）。

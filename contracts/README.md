@@ -21,7 +21,7 @@ forge test --root contracts
 
 ## Safe Module 実装時の条件
 
-- Safe version と ModuleManager API は [ADR 0004](../docs/decisions/0004-pin-safe-smart-account-v1.4.1.md) で `v1.4.1` に固定済み。依存追加（`forge install safe-global/safe-smart-account@v1.4.1` 等）は実装 PR で行う。
+- Safe version と ModuleManager API は [ADR 0004](../docs/decisions/0004-pin-safe-v1.4.1.md) で `v1.4.1` に固定済み。依存追加（`forge install safe-global/safe-smart-account@v1.4.1` 等）は実装 PR で行う。
 - 初版は circuit が証明する native ETH transfer / empty calldata / `Call` だけに限定する。
 - policy configuration と revoke は Safe owner が承認した Safe transaction を通す。
 - Safe address、chain ID、target、value、calldata hash、nonce、expiry を proof と execution の両方で bind する。

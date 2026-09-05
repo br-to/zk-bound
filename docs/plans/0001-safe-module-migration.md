@@ -3,7 +3,7 @@
 - 状態: active
 - 担当: maintainers
 - 最終更新: 2026-09-05
-- 関連 ADR: [ADR 0002](../decisions/0002-adopt-safe-module-execution-boundary.md)、[ADR 0003](../decisions/0003-constrain-policy-values-to-u128-range.md)、[ADR 0004](../decisions/0004-pin-safe-smart-account-v1.4.1.md)
+- 関連 ADR: [ADR 0002](../decisions/0002-adopt-safe-module-execution-boundary.md)、[ADR 0003](../decisions/0003-constrain-policy-values-to-u128-range.md)、[ADR 0004](../decisions/0004-pin-safe-v1.4.1.md)
 
 ## 到達点
 
@@ -29,8 +29,8 @@ ETH を保有する Safe が、有効化済み `ZkPolicySafeModule` を経由し
 
 ## 手順
 
-1. **CLOSED: range constraint を修正し、verifier を再生成する。** [ADR 0003](../decisions/0003-constrain-policy-values-to-u128-range.md) により `value`／`max_value` に `assert_max_bit_size::<128>()` を追加。PR #3 で固定 toolchain により `HonkVerifier.sol` と `allow.proof.bin` を再生成し、`nargo` 6/6・`forge` 7/7 が通った。commitment 入力と public-input 順序は変わっていないため、Policy SDK encoding と test vector はそのまま。fixture verify も成功。
-2. **DONE（ADR）: Safe release、依存元、module API、公式テスト fixture を ADR で固定する。** [ADR 0004](../decisions/0004-pin-safe-smart-account-v1.4.1.md) で `v1.4.1`（commit `bf943f80…`）、`@safe-global/safe-contracts@1.4.1`、ModuleManager API、公式 fixture 方針を accepted。forge dep／submodule の install と `ZkPolicySafeModule` 実装は後続工程。
+1. **CLOSED: range constraint を修正し、verifier を再生成する。** [ADR 0003](../decisions/0003-constrain-policy-values-to-u128-range.md) により `value`／`max_value` に `assert_max_bit_size::<128>()` を追加（[PR #2](https://github.com/br-to/zk-bound/pull/2)）。固定 toolchain で `HonkVerifier.sol` と `allow.proof.bin` を再生成し on-chain verify が通ることを確認（[PR #3](https://github.com/br-to/zk-bound/pull/3); `nargo` 6/6・`forge` 7/7）。commitment 入力と public-input 順序は変わっていないため、Policy SDK encoding と test vector はそのまま有効。旧「SDK／vectors／fixture 未同期」記述は誤りで、Step 1 は main 上で閉じている。
+2. **DONE（ADR）: Safe release、依存元、module API、公式テスト fixture を ADR で固定する。** [ADR 0004](../decisions/0004-pin-safe-v1.4.1.md) で `v1.4.1`（commit `bf943f80…`）、`@safe-global/safe-contracts@1.4.1`、ModuleManager API、公式 fixture 方針を accepted。forge dep／submodule の install と `ZkPolicySafeModule` 実装は後続工程。
 3. `safe` と対応 operation を policy spec と test vector に定義する。意味が同じなら既存の 8 public input の順序を保つ。
 4. configuration、revoke、context check、verifier 呼び出し、Safe ごとの nonce、event、fail-closed な module 実行を実装する。
 5. enabled module 成功、無効 module 拒否、設定変更、target/value/calldata 改ざん、別 Safe／chain、replay、expiry、不正 input、不正 proof、Safe 実行失敗をテストする。

@@ -1,6 +1,6 @@
 # Safe Module design
 
-この文書は ADR 0002 を実装へ落とすための境界を定義する。Safe release と ModuleManager API は [ADR 0004](../decisions/0004-pin-safe-smart-account-v1.4.1.md)（`v1.4.1`）で固定済み。我々の module 上の policy configure／revoke の具体的な関数名と、policy 変更時の nonce 扱いは未決定のまま残す。
+この文書は ADR 0002 を実装へ落とすための境界を定義する。Safe release と ModuleManager API は [ADR 0004](../decisions/0004-pin-safe-v1.4.1.md)（`v1.4.1`）で固定済み。我々の module 上の policy configure／revoke の具体的な関数名と、policy 変更時の nonce 扱いは未決定のまま残す。
 
 ## 役割
 
