@@ -32,7 +32,7 @@ ETH を保有する Safe が、有効化済み `ZkPolicySafeModule` を経由し
 1. **CLOSED: range constraint を修正し、verifier を再生成する。** [ADR 0003](../decisions/0003-constrain-policy-values-to-u128-range.md) により `value`／`max_value` に `assert_max_bit_size::<128>()` を追加（[PR #2](https://github.com/br-to/zk-bound/pull/2)）。固定 toolchain で `HonkVerifier.sol` と `allow.proof.bin` を再生成し on-chain verify が通ることを確認（[PR #3](https://github.com/br-to/zk-bound/pull/3); `nargo` 6/6・`forge` 7/7）。commitment 入力と public-input 順序は変わっていないため、Policy SDK encoding と test vector はそのまま有効。旧「SDK／vectors／fixture 未同期」記述は誤りで、Step 1 は main 上で閉じている。
 2. **DONE（ADR）: Safe release、依存元、module API、公式テスト fixture を ADR で固定する。** [ADR 0004](../decisions/0004-pin-safe-v1.4.1.md) で `v1.4.1`（commit `bf943f80…`）、`@safe-global/safe-contracts@1.4.1`、ModuleManager API、公式 fixture 方針を accepted。forge dep／submodule の install と `ZkPolicySafeModule` 実装は後続工程。
 3. **DONE: `safe` と対応 operation を policy spec と test vector に定義する。** ([PR #6](https://github.com/br-to/zk-bound/pull/6)) `account` は Safe address（`account == safe`）を意味し、Safe operation は empty calldata + `Enum.Operation.Call` に固定。既存の 8 public input 順序と hex は維持（vector version 2 はメタデータ追加のみ）。module 実装は含まない。
-4. **DONE: configuration、revoke、context check、verifier 呼び出し、Safe ごとの nonce、event、fail-closed な module 実行を実装する。**（PR リンクは PR 作成後に追記）
+4. **DONE: configuration、revoke、context check、verifier 呼び出し、Safe ごとの nonce、event、fail-closed な module 実行を実装する。** ([PR #7](https://github.com/br-to/zk-bound/pull/7))
 5. enabled module 成功、無効 module 拒否、設定変更、target/value/calldata 改ざん、別 Safe／chain、replay、expiry、不正 input、不正 proof、Safe 実行失敗をテストする。
 6. deploy／execute script と Anvil demo を Safe 経路へ置き換える。
 7. Safe 経路がテスト・demo ともに同等になってから `PolicyAccount` を別 PR で削除する。
