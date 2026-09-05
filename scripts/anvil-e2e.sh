@@ -69,23 +69,25 @@ cat <<'EOF'
 
 EOF
 
-if ! curl -sf -X POST -H 'content-type: application/json' \
-  --data '{"jsonrpc":"2.0","id":1,"method":"eth_chainId","params":[]}' \
-  "$RPC" >/dev/null; then
-  log "Anvil を起動する (code size limit なし)"
-  mkdir -p /tmp/zk-bound
-  nohup anvil --host 127.0.0.1 --port 8545 --disable-code-size-limit --gas-limit 60000000 \
-    > /tmp/zk-bound/anvil.log 2>&1 &
-  echo $! > /tmp/zk-bound/anvil.pid
-  for _ in $(seq 1 40); do
-    if curl -sf -X POST -H 'content-type: application/json' \
-      --data '{"jsonrpc":"2.0","id":1,"method":"eth_chainId","params":[]}' \
-      "$RPC" >/dev/null; then
-      break
-    fi
-    sleep 0.25
-  done
+# Always restart local Anvil so prior timestamp warps / deployments cannot leak in.
+if command -v pgrep >/dev/null 2>&1; then
+  pgrep -x anvil | while read -r _pid; do kill "$_pid" >/dev/null 2>pgrep -x anvil | while read -r _pid; do kill "$_pid" >/dev/null 2>&1 || true; done1 || true; done || true
 fi
+rm -f /tmp/zk-bound/anvil.pid
+sleep 0.5
+log "Anvil を起動する (code size limit なし)"
+mkdir -p /tmp/zk-bound
+nohup anvil --host 127.0.0.1 --port 8545 --disable-code-size-limit --gas-limit 60000000 \
+  > /tmp/zk-bound/anvil.log 2>&1 &
+echo $! > /tmp/zk-bound/anvil.pid
+for _ in $(seq 1 40); do
+  if curl -sf -X POST -H 'content-type: application/json' \
+    --data '{"jsonrpc":"2.0","id":1,"method":"eth_chainId","params":[]}' \
+    "$RPC" >/dev/null; then
+    break
+  fi
+  sleep 0.25
+done
 
 CHAIN_ID_HEX="$(cast chain-id --rpc-url "$RPC")"
 if [ "$CHAIN_ID_HEX" != "31337" ]; then
@@ -95,6 +97,7 @@ fi
 
 log "HonkVerifier + ZkPolicySafeModule + Safe をデプロイして 10 ETH を入れる"
 cd "$CONTRACTS"
+rm -f broadcast/DeploySafe.s.sol/31337/run-latest.json
 DEPLOY_LOG="$(mktemp)"
 forge script script/DeploySafe.s.sol:DeploySafe \
   --rpc-url "$RPC" \
