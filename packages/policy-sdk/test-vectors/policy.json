@@ -1,12 +1,19 @@
 {
-  "version": 1,
-  "notes": "Shared golden vectors for TypeScript, Noir, and Solidity. Do not regenerate casually; change only with a version bump and dual review.",
+  "version": 2,
+  "notes": "Shared golden vectors for TypeScript, Noir, and Solidity. Public-input order and hex values are locked for commitment compatibility. Version 2 documents Safe Module binding: account means Safe address (account == safe); Safe operation is Call with empty calldata. Do not regenerate casually; change only with a version bump and dual review.",
   "encoding": {
     "address": "20-byte 0x-hex interpreted as a big-endian integer Field (value < 2^160 < Fr)",
     "uint": "unsigned integer as Field; must be < BN254_Fr",
     "calldataHash": "keccak256(calldata) as bytes32; Field form is uint256(bytes32) mod BN254_Fr",
     "commitmentInputs": ["POLICY_DOMAIN", "maxValue", "allowedTarget", "policySalt"],
     "hash": "Poseidon2 hashFixedLength (Aztec / @zkpassport/poseidon2). iv = input_len << 64, rate=3, t=4. Do not use Noir 1.0.0-beta.22 Poseidon2Hasher for 4 inputs (tail drop bug).",
+    "account": "Safe address that will execute via ZkPolicySafeModule; public-input slot name remains account for circuit compatibility (account == safe)",
+    "safeOperation": {
+      "operation": "Call",
+      "operationEnum": 0,
+      "data": "0x",
+      "note": "operation is NOT a public input; execution boundary must reject any Enum.Operation other than Call"
+    },
     "publicInputOrder": [
       "policyCommitment",
       "chainId",
@@ -25,7 +32,8 @@
     "emptyCalldataHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470",
     "emptyCalldataHashField": "0x04410c360230a295b13d66d8d6c1a24c44311531e39c64f66c7301b49d85a46c",
     "poseidon2_1_2_3": "0x23864adb160dddf590f1d3303683ebcb914f828e2635f6e85a32f0a1aecd3dd8",
-    "poseidon2_1_2_3_4_5": "0x2247be7014a54d17342a7ef677f58d28877780d203860396967f5d0a18d259db"
+    "poseidon2_1_2_3_4_5": "0x2247be7014a54d17342a7ef677f58d28877780d203860396967f5d0a18d259db",
+    "safeOperationCall": 0
   },
   "policy": {
     "maxValue": "1000000000000000000",
@@ -43,8 +51,16 @@
         "target": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
         "value": "500000000000000000",
         "calldata": "0x",
+        "operation": "Call",
         "nonce": "0",
         "expiry": "2000000000"
+      },
+      "safeOperation": {
+        "to": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+        "value": "500000000000000000",
+        "data": "0x",
+        "operation": "Call",
+        "operationEnum": 0
       },
       "expected": {
         "satisfiesPolicy": true,
@@ -70,8 +86,16 @@
         "target": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
         "value": "1000000000000000000",
         "calldata": "0x",
+        "operation": "Call",
         "nonce": "0",
         "expiry": "2000000000"
+      },
+      "safeOperation": {
+        "to": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+        "value": "1000000000000000000",
+        "data": "0x",
+        "operation": "Call",
+        "operationEnum": 0
       },
       "expected": {
         "satisfiesPolicy": true,
@@ -98,8 +122,16 @@
         "target": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
         "value": "1000000000000000001",
         "calldata": "0x",
+        "operation": "Call",
         "nonce": "0",
         "expiry": "2000000000"
+      },
+      "safeOperation": {
+        "to": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+        "value": "1000000000000000001",
+        "data": "0x",
+        "operation": "Call",
+        "operationEnum": 0
       },
       "expected": {
         "satisfiesPolicy": false,
@@ -116,8 +148,16 @@
         "target": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
         "value": "500000000000000000",
         "calldata": "0x",
+        "operation": "Call",
         "nonce": "0",
         "expiry": "2000000000"
+      },
+      "safeOperation": {
+        "to": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "500000000000000000",
+        "data": "0x",
+        "operation": "Call",
+        "operationEnum": 0
       },
       "expected": {
         "satisfiesPolicy": false,
