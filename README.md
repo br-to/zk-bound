@@ -44,8 +44,8 @@ pnpm test
 The exact Noir and Barretenberg versions for circuit and live-proof work are
 fixed in [`scripts/toolchain.env`](scripts/toolchain.env). See
 [`contracts/README.md`](contracts/README.md) and the migration plan before
-running the Anvil demo: its scripts still exercise the legacy account until the
-Safe path replaces them.
+running the Anvil demo on the Safe module path.
+PolicyAccount scripts remain as reference until Step 7.
 
 ## Tools & libraries
 

@@ -93,6 +93,75 @@ contract ZkPolicySafeModuleTest is Test {
         module.executeWithPolicy(ACCOUNT, proof, publicInputs, TARGET, VALUE, "", EXPIRY, Enum.Operation.Call);
     }
 
+
+    function test_configureReplaceRevoke() public {
+        address other = address(0xCAFE);
+        Safe otherSafe = _installSafeAtAccount(other, address(this));
+        vm.deal(other, 1 ether);
+        vm.prank(other);
+        otherSafe.enableModule(address(module));
+
+        vm.prank(other);
+        module.configurePolicy(COMMITMENT);
+        (uint256 c0, uint256 n0, bool a0) = module.getPolicyState(other);
+        assertEq(c0, COMMITMENT);
+        assertEq(n0, 0);
+        assertTrue(a0);
+
+        uint256 nextCommitment = COMMITMENT + 1;
+        vm.prank(other);
+        module.replacePolicy(nextCommitment);
+        (uint256 c1, uint256 n1, bool a1) = module.getPolicyState(other);
+        assertEq(c1, nextCommitment);
+        assertEq(n1, 0); // replace keeps nonce
+        assertTrue(a1);
+
+        vm.prank(other);
+        module.revokePolicy();
+        (, , bool a2) = module.getPolicyState(other);
+        assertFalse(a2);
+    }
+
+    function test_executeWithPolicyRejectsNonEmptyCalldata() public {
+        vm.expectRevert(ZkPolicySafeModule.CalldataHashMismatch.selector);
+        module.executeWithPolicy(
+            ACCOUNT, proof, publicInputs, TARGET, VALUE, hex"01", EXPIRY, Enum.Operation.Call
+        );
+    }
+
+    function test_executeWithPolicyRejectsDelegateCall() public {
+        vm.expectRevert(ZkPolicySafeModule.InvalidOperation.selector);
+        module.executeWithPolicy(
+            ACCOUNT, proof, publicInputs, TARGET, VALUE, "", EXPIRY, Enum.Operation.DelegateCall
+        );
+    }
+
+    function test_executeWithPolicyRejectsWrongAccount() public {
+        bytes32[] memory pubs = publicInputs;
+        pubs[2] = bytes32(uint256(uint160(address(0xB0B))));
+        vm.expectRevert(ZkPolicySafeModule.AccountMismatch.selector);
+        module.executeWithPolicy(
+            ACCOUNT, proof, pubs, TARGET, VALUE, "", EXPIRY, Enum.Operation.Call
+        );
+    }
+
+    function test_executeWithPolicyRejectsWrongChainId() public {
+        bytes32[] memory pubs = publicInputs;
+        pubs[1] = bytes32(uint256(1));
+        vm.expectRevert(ZkPolicySafeModule.ChainIdMismatch.selector);
+        module.executeWithPolicy(
+            ACCOUNT, proof, pubs, TARGET, VALUE, "", EXPIRY, Enum.Operation.Call
+        );
+    }
+
+    function test_executeWithPolicyRejectsSafeCallFailed() public {
+        vm.deal(ACCOUNT, 0);
+        vm.expectRevert(ZkPolicySafeModule.SafeCallFailed.selector);
+        module.executeWithPolicy(
+            ACCOUNT, proof, publicInputs, TARGET, VALUE, "", EXPIRY, Enum.Operation.Call
+        );
+    }
+
     function _deploySafe(address owner) internal returns (Safe deployed) {
         Safe singleton = new Safe();
         SafeProxyFactory factory = new SafeProxyFactory();
