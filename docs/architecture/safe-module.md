@@ -1,6 +1,6 @@
 # Safe Module design
 
-この文書は ADR 0002 を実装へ落とすための境界を定義する。Safe release と正確な module interface は follow-up ADR で固定するまで仮定しない。
+この文書は ADR 0002 を実装へ落とすための境界を定義する。Safe release と ModuleManager API は [ADR 0004](../decisions/0004-pin-safe-smart-account-v1.4.1.md)（`v1.4.1`）で固定済み。我々の module 上の policy configure／revoke の具体的な関数名と、policy 変更時の nonce 扱いは未決定のまま残す。
 
 ## 役割
 
@@ -29,7 +29,7 @@ sequenceDiagram
     Safe-->>Owner: transaction result
 ```
 
-agent、relayer、任意 EOA はこの経路を呼び出せない。具体的な Safe transaction と emergency revoke の方式は follow-up ADR で固定する。
+agent、relayer、任意 EOA はこの経路を呼び出せない。Safe 側の enable／disable は ADR 0004 の ModuleManager API に従う。我々の module 上の configure／replace／revoke の具体的な関数名と emergency revoke の方式は follow-up ADR で固定する。
 
 ## 必要な状態
 
