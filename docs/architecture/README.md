@@ -77,10 +77,9 @@ follow-up ADR で固定するまでの未決定事項は次の2点である。
 Each selection must state its threat-model assumptions and be captured in
 [`docs/decisions`](../decisions/README.md).
 
-## Imported baseline and target boundary
+## Execution boundary
 
-The imported `PolicyAccount` is a reference implementation for proof-to-call
-binding. It is not the target custody architecture. The Safe Module target is:
+On-chain authorization is enforced by `ZkPolicySafeModule` on a Safe:
 
 ```text
 agent proposal
@@ -93,7 +92,9 @@ agent proposal
   -> Safe action
 ```
 
-The migration keeps the circuit statement and encoding stable wherever the Safe
-action can be represented by the existing binding. Any extension beyond native
-ETH transfer—such as operation type, ERC-20 semantics, or multi-send—requires a
-new ADR, new vectors, and a coordinated circuit/verifier update.
+The imported `zk-agent-guard` baseline used a standalone `PolicyAccount` smart
+account; that path was removed in Plan 0001 Step 7. The circuit statement and
+encoding remain stable wherever the Safe action can be represented by the
+existing binding. Any extension beyond native ETH transfer—such as operation
+type, ERC-20 semantics, or multi-send—requires a new ADR, new vectors, and a
+coordinated circuit/verifier update.

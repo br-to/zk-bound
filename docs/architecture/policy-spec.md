@@ -20,7 +20,7 @@ TransactionBinding {
 | --- | --- |
 | `policyCommitment` | その Safe に登録された active policy commitment |
 | `chainId` | 実行する chain の ID |
-| `account` | **Safe address**（`account == safe`）。旧 `PolicyAccount` 自身の address と同じスロットを再利用する |
+| `account` | **Safe address**（`account == safe`）。circuit／SDK 互換のためフィールド名は `account` のまま |
 | `target` | `execTransactionFromModule` の `to` |
 | `value` | `execTransactionFromModule` の `value`（wei） |
 | `calldataHash` | `keccak256(data) % BN254_Fr`。初版の `data` は空 |
