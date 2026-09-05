@@ -50,7 +50,7 @@
 
 - `ZkPolicySafeModule.sol` の実装
 - 本 PR での forge dep／submodule 追加（pin の文書化のみ。install は実装 PR）
-- circuit、SDK、verifier、proof fixture の変更
+- circuit、SDK、verifier、proof fixture の変更（Step 1 は PR #2／#3 で main に反映済み）
 
 ## Consequences
 
