@@ -71,7 +71,7 @@ EOF
 
 # Always restart local Anvil so prior timestamp warps / deployments cannot leak in.
 if command -v pgrep >/dev/null 2>&1; then
-  pgrep -x anvil | while read -r _pid; do kill "$_pid" >/dev/null 2>pgrep -x anvil | while read -r _pid; do kill "$_pid" >/dev/null 2>&1 || true; done1 || true; done || true
+  pgrep -x anvil | while read -r _pid; do kill "$_pid" >/dev/null 2>&1 || true; done || true
 fi
 rm -f /tmp/zk-bound/anvil.pid
 sleep 0.5
