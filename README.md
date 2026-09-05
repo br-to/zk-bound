@@ -47,6 +47,49 @@ fixed in [`scripts/toolchain.env`](scripts/toolchain.env). See
 running the Anvil demo: its scripts still exercise the legacy account until the
 Safe path replaces them.
 
+## 使用ツール / ライブラリ
+
+Versions below are taken only from repo pins (`scripts/toolchain.env`,
+`package.json`, `contracts/foundry.toml`, `.gitmodules`, and
+[ADR 0004](docs/decisions/0004-pin-safe-v1.4.1.md)). Unpinned tools are named
+without a guessed version.
+
+### Proof / circuit
+
+| Tool | Version | Source |
+| --- | --- | --- |
+| Noir (`nargo`) | `1.0.0-beta.22` | [`scripts/toolchain.env`](scripts/toolchain.env) (`NOIR_VERSION`) |
+| Barretenberg (`bb`) | `5.0.0-nightly.20260522` | [`scripts/toolchain.env`](scripts/toolchain.env) (`BB_VERSION`) |
+
+Noir and Barretenberg must stay in lockstep; see the comments in
+`scripts/toolchain.env`.
+
+### Contracts
+
+| Tool / library | Version | Source |
+| --- | --- | --- |
+| Solidity (`solc`) | `0.8.30` | [`contracts/foundry.toml`](contracts/foundry.toml) (`solc_version`) |
+| [forge-std](https://github.com/foundry-rs/forge-std) | (submodule; no tag pin in the sources above) | [`.gitmodules`](.gitmodules) → `contracts/lib/forge-std` |
+| [safe-smart-account](https://github.com/safe-global/safe-smart-account) | `v1.4.1` (commit `bf943f80fec5ac647159d26161446ac5d716a294`; NPM `@safe-global/safe-contracts@1.4.1`) | [ADR 0004](docs/decisions/0004-pin-safe-v1.4.1.md), [`.gitmodules`](.gitmodules) → `contracts/lib/safe-smart-account` |
+
+### TypeScript
+
+| Tool / library | Version | Source |
+| --- | --- | --- |
+| Node.js | `>=22` | [`package.json`](package.json) (`engines.node`) |
+| pnpm | `10.31.0` | [`package.json`](package.json) (`packageManager`) |
+| TypeScript | `^5.9.3` | [`package.json`](package.json) (`devDependencies`) |
+| ESLint | `^9.39.1` | [`package.json`](package.json) (`devDependencies`) |
+| Prettier | `^3.7.4` | [`package.json`](package.json) (`devDependencies`) |
+
+Workspace packages (`@zk-bound/policy-sdk`, `@zk-bound/demo`) are defined under `packages/` and `apps/`; their runtime deps are not duplicated here because this section is limited to the root `package.json` pin list above.
+
+### Anvil / Foundry tools
+
+| Tool | Version | Source |
+| --- | --- | --- |
+| Foundry (`forge` / `cast` / `anvil`) | (used by scripts; no version pin in the sources above) | [`package.json`](package.json) scripts `test:contracts`, `demo:anvil` |
+
 ## License
 
 No license has been selected. Until that decision is recorded and a license is
