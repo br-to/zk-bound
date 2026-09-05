@@ -35,7 +35,7 @@ ETH を保有する Safe が、有効化済み `ZkPolicySafeModule` を経由し
 4. **DONE: configuration、revoke、context check、verifier 呼び出し、Safe ごとの nonce、event、fail-closed な module 実行を実装する。** ([PR #7](https://github.com/br-to/zk-bound/pull/7))
 5. PARTIAL thin extras — enabled module 成功、無効 module 拒否、設定変更、target/value/calldata 改ざん、別 Safe／chain、replay、expiry、不正 input、不正 proof、Safe 実行失敗をテストする。
 6. **DONE: deploy/execute script と Anvil demo を Safe 経路へ置き換える。** (PR #10)
-7. Safe 経路がテスト・demo ともに同等になってから `PolicyAccount` を別 PR で削除する。
+7. **DONE: `PolicyAccount` と旧 Deploy/Execute script を削除する。** Safe 経路が test・demo の正本となり、standalone smart account 経路は除去済み。
 
 ## 受入条件
 
@@ -51,7 +51,7 @@ ETH を保有する Safe が、有効化済み `ZkPolicySafeModule` を経由し
 - nonce は Safe 実行と同一 transaction で消費し、Safe call の失敗をテストする。
 - configuration caller は Safe 自身に限定し、owner 承認済み Safe transaction を通す。
 - 初版 module は circuit が証明する操作意味論に限定する。
-- Safe parity が取れるまでは `PolicyAccount` を reference／rollback 経路として保持する。
+- 旧 standalone `PolicyAccount` 経路は Step 7 で削除済み。ロールバックは git 履歴上の参照に限る。
 
 ## 検証
 

@@ -9,9 +9,8 @@ binds that exact action to an owner-defined policy.
 
 The cryptographic policy layer is deliberately retained: Noir circuit, Policy
 SDK encoding, Poseidon2 commitment, UltraHonk verifier, proof binding, nonce,
-replay, expiry, test vectors, and the prompt-injection demo. The execution
-boundary is being migrated from a standalone `PolicyAccount` to a
-`ZkPolicySafeModule`.
+replay, expiry, test vectors, and the prompt-injection demo. Execution goes
+through a Safe enabled with `ZkPolicySafeModule`.
 
 ## Start here
 
@@ -27,9 +26,9 @@ boundary is being migrated from a standalone `PolicyAccount` to a
 
 ## Repository status
 
-The `zk-agent-guard` baseline is imported at commit `e80f873`. It remains an
-executable reference while Safe integration is built and verified. `PolicyAccount`
-must not become the production execution path; see
+The `zk-agent-guard` baseline is imported at commit `e80f873` for the
+cryptographic policy layer (circuit, SDK, verifier, vectors). On-chain execution
+is the Safe + `ZkPolicySafeModule` path; see
 [ADR 0002](docs/decisions/0002-adopt-safe-module-execution-boundary.md).
 
 ## Quick start (baseline)
@@ -43,9 +42,8 @@ pnpm test
 
 The exact Noir and Barretenberg versions for circuit and live-proof work are
 fixed in [`scripts/toolchain.env`](scripts/toolchain.env). See
-[`contracts/README.md`](contracts/README.md) and the migration plan before
-running the Anvil demo on the Safe module path.
-PolicyAccount scripts remain as reference until Step 7.
+[`contracts/README.md`](contracts/README.md) for deploy/execute scripts and
+`pnpm demo:anvil` for the Safe module E2E demo.
 
 ## Tools & libraries
 
@@ -71,8 +69,7 @@ root / workspace `package.json` files, [`contracts/foundry.toml`](contracts/foun
 | solc | `0.8.30` | `solc_version` in `contracts/foundry.toml` |
 | forge-std | git submodule | `contracts/lib/forge-std` (see `.gitmodules`) |
 | Safe smart account | `v1.4.1` | [ADR 0004](docs/decisions/0004-pin-safe-v1.4.1.md); submodule `contracts/lib/safe-smart-account` |
-| `ZkPolicySafeModule` | `contracts/src/ZkPolicySafeModule.sol` | Safe Module migration target |
-| `PolicyAccount` | `contracts/src/PolicyAccount.sol` | imported baseline; migration reference only (not the production path) |
+| `ZkPolicySafeModule` | `contracts/src/ZkPolicySafeModule.sol` | proof-gated Safe execution boundary |
 
 ### TypeScript
 
@@ -88,9 +85,9 @@ root / workspace `package.json` files, [`contracts/foundry.toml`](contracts/foun
 
 ### Local execution
 
-- Foundry **Anvil** via `pnpm demo:anvil` (`scripts/anvil-e2e.sh`) for baseline live-proof E2E.
-  See [`contracts/README.md`](contracts/README.md) and the migration plan for which
-  execution path the script currently exercises.
+- Foundry **Anvil** via `pnpm demo:anvil` (`scripts/anvil-e2e.sh`) for Safe +
+  `ZkPolicySafeModule` live-proof E2E (deploy/execute via `DeploySafe.s.sol` /
+  `ExecuteSafe.s.sol`; see [`contracts/README.md`](contracts/README.md)).
 
 ## License
 

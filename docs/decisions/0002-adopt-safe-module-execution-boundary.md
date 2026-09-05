@@ -16,14 +16,14 @@
 
 policy の設定、置換、revoke は Safe owner が承認した Safe transaction だけで行う。agent や任意 EOA に直接与えた権限へ依存してはならない。
 
-既存の Noir circuit、Policy SDK canonical encoding、Poseidon2 commitment、UltraHonk verifier、proof fixture、test vector は compatibility baseline とする。`PolicyAccount` は Safe の test／demo が parity に達するまで migration reference としてだけ保持する。
+既存の Noir circuit、Policy SDK canonical encoding、Poseidon2 commitment、UltraHonk verifier、proof fixture、test vector は compatibility baseline とする。旧 `PolicyAccount` standalone 経路は Plan 0001 Step 7 で削除済み。
 
 ## Consequences
 
 - 資金は Safe custody に残り、module は制約付き実行経路になる。
 - integration を主張する test／demo は、実際の Safe または version-pinned 公式 fixture を使う。
 - target Safe version と module API は、module deploy 前に follow-up ADR で固定する。
-- legacy Anvil script と README の導線は Safe parity 後に置き換える。
+- legacy Anvil script と README の導線は Safe parity 後に置き換えた（Plan 0001 Step 6–7）。旧 `PolicyAccount` と `Deploy.s.sol`／`Execute.s.sol` は Step 7 で削除済み。
 
 ## Alternatives considered
 
@@ -35,4 +35,4 @@ policy の設定、置換、revoke は Safe owner が承認した Safe transacti
 
 - [`docs/architecture/README.md`](../architecture/README.md)
 - [`docs/plans/0001-safe-module-migration.md`](../plans/0001-safe-module-migration.md)
-- [`contracts/src/PolicyAccount.sol`](../../contracts/src/PolicyAccount.sol)
+- [`contracts/src/ZkPolicySafeModule.sol`](../../contracts/src/ZkPolicySafeModule.sol)
