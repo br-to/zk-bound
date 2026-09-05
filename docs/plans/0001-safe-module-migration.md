@@ -34,7 +34,7 @@ ETH を保有する Safe が、有効化済み `ZkPolicySafeModule` を経由し
 3. **DONE: `safe` と対応 operation を policy spec と test vector に定義する。** ([PR #6](https://github.com/br-to/zk-bound/pull/6)) `account` は Safe address（`account == safe`）を意味し、Safe operation は empty calldata + `Enum.Operation.Call` に固定。既存の 8 public input 順序と hex は維持（vector version 2 はメタデータ追加のみ）。module 実装は含まない。
 4. **DONE: configuration、revoke、context check、verifier 呼び出し、Safe ごとの nonce、event、fail-closed な module 実行を実装する。** ([PR #7](https://github.com/br-to/zk-bound/pull/7))
 5. PARTIAL thin extras — enabled module 成功、無効 module 拒否、設定変更、target/value/calldata 改ざん、別 Safe／chain、replay、expiry、不正 input、不正 proof、Safe 実行失敗をテストする。
-6. **DONE: deploy/execute script と Anvil demo を Safe 経路へ置き換える。** (this PR)
+6. **DONE: deploy/execute script と Anvil demo を Safe 経路へ置き換える。** (PR #10)
 7. Safe 経路がテスト・demo ともに同等になってから `PolicyAccount` を別 PR で削除する。
 
 ## 受入条件
