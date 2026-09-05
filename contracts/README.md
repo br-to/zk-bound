@@ -6,6 +6,7 @@
 
 - `src/verifier/HonkVerifier.sol` は固定した Barretenberg から生成した UltraHonk verifier。手で編集しない。
 - `src/PolicyAccount.sol` は `zk-agent-guard` から取り込んだ独自 smart account の reference 実装。
+- `src/ZkPolicySafeModule.sol` は Safe v1.4.1 module。policy 設定（`configurePolicy` / `replacePolicy` / `revokePolicy`）は Safe 自身からのみ。proof 付き実行は `executeWithPolicy`。
 - `test/fixtures/allow.proof.bin` は reference 実装を検証する allow proof fixture。
 
 `PolicyAccount` は production の実行経路ではない。Safe Module への移行方針は [ADR 0002](../docs/decisions/0002-adopt-safe-module-execution-boundary.md)、具体的な工程は [Plan 0001](../docs/plans/0001-safe-module-migration.md) を参照する。
@@ -21,7 +22,7 @@ forge test --root contracts
 
 ## Safe Module 実装時の条件
 
-- Safe version と ModuleManager API は [ADR 0004](../docs/decisions/0004-pin-safe-v1.4.1.md) で `v1.4.1` に固定済み。依存追加（`forge install safe-global/safe-smart-account@v1.4.1` 等）は実装 PR で行う。
+- Safe version と ModuleManager API は [ADR 0004](../docs/decisions/0004-pin-safe-v1.4.1.md) で `v1.4.1` に固定済み。依存は `contracts/lib/safe-smart-account`（tag `v1.4.1` / commit `bf943f80…`）。
 - 初版は circuit が証明する native ETH transfer / empty calldata / `Call` だけに限定する。
 - policy configuration と revoke は Safe owner が承認した Safe transaction を通す。
 - Safe address、chain ID、target、value、calldata hash、nonce、expiry を proof と execution の両方で bind する。
