@@ -2,6 +2,7 @@ import {
   encodeAddress,
   encodeAddressHex,
   encodeBytes32,
+  encodeU128,
   encodeUint,
   hashCalldata,
 } from "./encoding.js";
@@ -19,7 +20,7 @@ export function bindTransaction(proposal: TransactionProposal): TransactionBindi
     chainId: encodeUint(proposal.chainId, "chainId"),
     account: encodeAddressHex(proposal.account, "account"),
     target: encodeAddressHex(proposal.target, "target"),
-    value: encodeUint(proposal.value, "value"),
+    value: encodeU128(proposal.value, "value"),
     calldataHash: hashCalldata(proposal.calldata),
     nonce: encodeUint(proposal.nonce, "nonce"),
     expiry: encodeUint(proposal.expiry, "expiry"),
@@ -27,9 +28,9 @@ export function bindTransaction(proposal: TransactionProposal): TransactionBindi
 }
 
 export function evaluatePolicy(policy: PrivatePolicy, proposal: TransactionProposal): PolicyCheck {
-  const maxValue = encodeUint(policy.maxValue, "maxValue");
+  const maxValue = encodeU128(policy.maxValue, "maxValue");
   const allowedTarget = encodeAddress(policy.allowedTarget, "allowedTarget");
-  const value = encodeUint(proposal.value, "value");
+  const value = encodeU128(proposal.value, "value");
   const target = encodeAddress(proposal.target, "target");
 
   if (value > maxValue) {

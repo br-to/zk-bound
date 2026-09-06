@@ -94,7 +94,9 @@ target == allowedTarget
 （[ADR 0003](../decisions/0003-constrain-policy-values-to-u128-range.md)）。native
 ETH transfer が扱う wei 額に対して `2^128` は現実的な制限にならない。この
 range constraint がないと `Field as u128` cast が上位 bit を切り捨て、
-`2^128` 以上の値を上限比較で truncate してしまう。
+`2^128` 以上の値を上限比較で truncate してしまう。Policy SDK の `commitPolicy`、
+`bindTransaction`、`evaluatePolicy`、`publicInputs` も同じ境界を適用し、proof を生成できない
+入力を事前に `RangeError` で拒否する。
 
 `expiry` の比較は execution boundary の `block.timestamp <= expiry` に置く。circuit は expiry を binding に含め、値の差し替えを防ぐ。replay は Safe ごとの on-chain nonce と binding により防ぐ。
 

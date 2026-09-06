@@ -1,5 +1,5 @@
 import { poseidon2Hash } from "@zkpassport/poseidon2";
-import { POLICY_DOMAIN, encodeAddress, encodeUint } from "./encoding.js";
+import { POLICY_DOMAIN, encodeAddress, encodeU128, encodeUint } from "./encoding.js";
 import { fieldToHex } from "./field.js";
 import type { PrivatePolicy } from "./types.js";
 
@@ -18,7 +18,7 @@ export function poseidon2HashFields(inputs: readonly bigint[]): bigint {
 export function commitPolicy(policy: PrivatePolicy): bigint {
   return poseidon2HashFields([
     POLICY_DOMAIN,
-    encodeUint(policy.maxValue, "maxValue"),
+    encodeU128(policy.maxValue, "maxValue"),
     encodeAddress(policy.allowedTarget, "allowedTarget"),
     encodeUint(policy.policySalt, "policySalt"),
   ]);
