@@ -70,31 +70,32 @@ contract ZkPolicySafeModule is Enum {
         return (state.commitment, state.nonce, state.active);
     }
 
-    /// @notice Initial policy configuration for a Safe. Callable only from the Safe itself.
+    /// @notice Configure or reactivate a policy for a Safe. Callable only from the Safe itself.
     function configurePolicy(uint256 commitment) external {
         PolicyState storage state = _policyStates[msg.sender];
         if (state.active) revert AlreadyConfigured();
 
         state.commitment = commitment;
-        state.nonce = 0;
         state.active = true;
         emit PolicyConfigured(msg.sender, commitment);
     }
 
-    /// @notice Replace the active policy commitment. Callable only from the Safe itself.
+    /// @notice Replace the active policy commitment and invalidate outstanding proofs.
     function replacePolicy(uint256 commitment) external {
         PolicyState storage state = _policyStates[msg.sender];
         if (!state.active) revert NotConfigured();
 
         state.commitment = commitment;
+        state.nonce += 1;
         emit PolicyReplaced(msg.sender, commitment);
     }
 
-    /// @notice Revoke the active policy. Callable only from the Safe itself.
+    /// @notice Revoke the active policy and invalidate outstanding proofs.
     function revokePolicy() external {
         PolicyState storage state = _policyStates[msg.sender];
         if (!state.active) revert NotConfigured();
 
+        state.nonce += 1;
         state.active = false;
         emit PolicyRevoked(msg.sender);
     }
