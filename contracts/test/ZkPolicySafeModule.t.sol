@@ -113,13 +113,38 @@ contract ZkPolicySafeModuleTest is Test {
         module.replacePolicy(nextCommitment);
         (uint256 c1, uint256 n1, bool a1) = module.getPolicyState(other);
         assertEq(c1, nextCommitment);
-        assertEq(n1, 0); // replace keeps nonce
+        assertEq(n1, 1);
         assertTrue(a1);
 
         vm.prank(other);
         module.revokePolicy();
-        (, , bool a2) = module.getPolicyState(other);
+        (, uint256 n2, bool a2) = module.getPolicyState(other);
+        assertEq(n2, 2);
         assertFalse(a2);
+    }
+
+    function test_replacePolicyInvalidatesOutstandingProof() public {
+        vm.startPrank(ACCOUNT);
+        module.replacePolicy(COMMITMENT + 1);
+        module.replacePolicy(COMMITMENT);
+        vm.stopPrank();
+
+        vm.expectRevert(ZkPolicySafeModule.NonceMismatch.selector);
+        module.executeWithPolicy(
+            ACCOUNT, proof, publicInputs, TARGET, VALUE, "", EXPIRY, Enum.Operation.Call
+        );
+    }
+
+    function test_revokeAndReconfigureInvalidatesOutstandingProof() public {
+        vm.startPrank(ACCOUNT);
+        module.revokePolicy();
+        module.configurePolicy(COMMITMENT);
+        vm.stopPrank();
+
+        vm.expectRevert(ZkPolicySafeModule.NonceMismatch.selector);
+        module.executeWithPolicy(
+            ACCOUNT, proof, publicInputs, TARGET, VALUE, "", EXPIRY, Enum.Operation.Call
+        );
     }
 
     function test_executeWithPolicyRejectsNonEmptyCalldata() public {
