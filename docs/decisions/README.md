@@ -18,3 +18,4 @@ accepted records immutable except for status and cross-links.
 | [0002](0002-adopt-safe-module-execution-boundary.md) | accepted | Safe Module execution boundary |
 | [0003](0003-constrain-policy-values-to-u128-range.md) | accepted | Constrain `value` / `maxValue` to u128 range |
 | [0004](0004-pin-safe-v1.4.1.md) | accepted | Pin Safe smart account to v1.4.1 |
+| [0005](0005-invalidate-proofs-on-policy-lifecycle-changes.md) | accepted | Invalidate proofs on policy lifecycle changes |
