@@ -1,6 +1,6 @@
 # Safe Module design
 
-この文書は ADR 0002 を実装へ落とすための境界を定義する。Safe release と ModuleManager API は [ADR 0004](../decisions/0004-pin-safe-v1.4.1.md)（`v1.4.1`）で固定済み。module 上の policy API は `configurePolicy` / `replacePolicy` / `revokePolicy`（いずれも `msg.sender` が Safe であること）と `executeWithPolicy`（任意 caller）。policy 変更時の nonce は replace でも reset しない（commitment 変更で旧 proof は無効）。
+この文書は ADR 0002 を実装へ落とすための境界を定義する。Safe release と ModuleManager API は [ADR 0004](../decisions/0004-pin-safe-v1.4.1.md)（`v1.4.1`）で固定済み。module 上の policy API は `configurePolicy` / `replacePolicy` / `revokePolicy`（いずれも `msg.sender` が Safe であること）と `executeWithPolicy`（任意 caller）。policy lifecycle の nonce は [ADR 0005](../decisions/0005-invalidate-proofs-on-policy-lifecycle-changes.md) に従って単調増加させる。replace と revoke は nonce を進め、revoke 後の再設定でも reset しない。
 
 ## 役割
 
@@ -38,6 +38,8 @@ Safe ごとに以下を管理する。
 - active policy commitment
 - next nonce
 - configuration が active かどうか
+
+nonce は Safe/module pair の生存期間を通じて減少させない。初回設定は 0、proof の実行、policy の置換、revoke でそれぞれ進める。これにより同じ commitment へ戻した場合でも、変更前に発行された proof を再び有効にしない。
 
 policy の設定と revoke は `msg.sender == safe` を要求し、Safe owner が承認した Safe transaction によってのみ到達可能にする。module caller は agent、relayer、任意 EOA でよいが、policy を変更する権限は持たない。
 
