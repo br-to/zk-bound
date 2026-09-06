@@ -8,6 +8,9 @@ const ADDRESS_RE = /^0x[0-9a-fA-F]{40}$/;
 const HEX_RE = /^0x(?:[0-9a-fA-F]{2})*$/;
 const BYTES32_RE = /^0x[0-9a-fA-F]{64}$/;
 
+/** Maximum value accepted by the policy circuit's u128 range constraint. */
+export const U128_MAX = (1n << 128n) - 1n;
+
 export function normalizeHex(value: string, label: string): Hex {
   if (!HEX_RE.test(value)) {
     throw new TypeError(`${label} must be 0x-prefixed even-length hex, got ${value}`);
@@ -30,6 +33,15 @@ export function encodeAddressHex(value: string, label = "address"): Address {
 export function encodeUint(value: bigint | string, label: string): bigint {
   const parsed = typeof value === "string" ? parseDecimalOrHex(value, label) : value;
   return toField(parsed, label);
+}
+
+/** Encode a value that must satisfy the policy circuit's `Field -> u128` constraint. */
+export function encodeU128(value: bigint | string, label: string): bigint {
+  const encoded = encodeUint(value, label);
+  if (encoded > U128_MAX) {
+    throw new RangeError(`${label} must be < 2^128, got ${encoded}`);
+  }
+  return encoded;
 }
 
 export function encodeBytes32(value: string, label: string): bigint {
