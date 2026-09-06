@@ -9,8 +9,10 @@ import {
   POLICY_DOMAIN_TAG,
   PUBLIC_INPUT_ORDER,
   SAFE_OPERATION_CALL,
+  U128_MAX,
   commitPolicy,
   encodeAddressHex,
+  encodeU128,
   encodeUint,
   evaluatePolicy,
   fieldToHex,
@@ -131,6 +133,26 @@ test("policy commitment is locked", () => {
 test("changing policySalt changes the commitment", () => {
   const other = commitPolicy({ ...policy, policySalt: policy.policySalt + 1n });
   assert.notEqual(other, commitPolicy(policy));
+});
+
+test("u128 policy values accept the boundary and reject 2^128", () => {
+  assert.equal(encodeU128(U128_MAX, "value"), U128_MAX);
+  assert.throws(() => encodeU128(U128_MAX + 1n, "value"), {
+    name: "RangeError",
+    message: `value must be < 2^128, got ${U128_MAX + 1n}`,
+  });
+  assert.doesNotThrow(() => commitPolicy({ ...policy, maxValue: U128_MAX }));
+  assert.throws(() => commitPolicy({ ...policy, maxValue: U128_MAX + 1n }), RangeError);
+});
+
+test("proposal paths reject values the circuit cannot prove", () => {
+  const proposal = {
+    ...proposalOf(fixtures.vectors[0].transaction),
+    value: U128_MAX + 1n,
+  };
+
+  assert.throws(() => evaluatePolicy(policy, proposal), RangeError);
+  assert.throws(() => publicInputFields(policy, proposal), RangeError);
 });
 
 for (const vector of fixtures.vectors) {
