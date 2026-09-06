@@ -96,7 +96,7 @@ ETH transfer が扱う wei 額に対して `2^128` は現実的な制限にな�
 range constraint がないと `Field as u128` cast が上位 bit を切り捨て、
 `2^128` 以上の値を上限比較で truncate してしまう。
 
-`expiry` の比較は execution boundary の `block.timestamp <= expiry` に置く。circuit は expiry を binding に含め、値の差し替えを防ぐ。replay は Safe ごとの on-chain nonce と binding により防ぐ。
+`expiry` の比較は execution boundary の `block.timestamp <= expiry` に置く。circuit は expiry を binding に含め、値の差し替えを防ぐ。replay は Safe ごとの on-chain nonce と binding により防ぐ。nonce は [ADR 0005](../decisions/0005-invalidate-proofs-on-policy-lifecycle-changes.md) に従って policy の置換と revoke でも進め、再設定時に reset しない。同じ commitment を復元しても lifecycle 変更前の proof は再利用できない。
 
 ## Compatibility rule
 
